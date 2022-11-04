@@ -1,21 +1,18 @@
-import {useState, useRef, ChangeEvent, FormEvent, FocusEvent} from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 
 const SimpleInput = () => {
-  const nameInputRef = useRef<HTMLInputElement>(null);
   const [enteredName, setEnteredName] = useState<string>('');
-  const [enteredNameIsValid, setEnteredNameIsValid] = useState<boolean>(false);
   const [enteredNameTouched, setEnteredNameTouched] = useState<boolean>(false);
 
+  const enteredNameIsValid = enteredName.trim() !== '' && enteredNameTouched;
+  const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
+
   const nameInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setEnteredName(value);
-    if (value.trim() !== '') setEnteredNameIsValid(true);
+    setEnteredName(event.target.value);
   };
 
-  const nameInputBlurHandler = (event: FocusEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+  const nameInputBlurHandler = () => {
     setEnteredNameTouched(true);
-    if (value.trim() === '') setEnteredNameIsValid(false);
   };
 
   const formSubmissionHandler = (event: FormEvent) => {
@@ -23,21 +20,11 @@ const SimpleInput = () => {
 
     setEnteredNameTouched(true);
 
-    if (enteredName.trim() === '') {
-      setEnteredNameIsValid(false);
-      return;
-    }
-
-    setEnteredNameIsValid(true);
-
-    const enteredValue = nameInputRef.current?.value ?? null;
-    console.log(enteredName);
-    console.log(enteredValue);
+    if (!enteredNameIsValid) return;
 
     setEnteredName('');
+    setEnteredNameTouched(false);
   };
-
-  const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
 
   const nameInputClasses = nameInputIsInvalid ? 'form-control invalid' : 'form-control';
 
@@ -49,7 +36,6 @@ const SimpleInput = () => {
           type="text"
           id="name"
           value={enteredName}
-          ref={nameInputRef}
           onChange={nameInputChangeHandler}
           onBlur={nameInputBlurHandler}
         />
