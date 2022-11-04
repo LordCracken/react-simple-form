@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent, FormEvent } from 'react';
+import {useState, useRef, ChangeEvent, FormEvent, FocusEvent} from 'react';
 
 const SimpleInput = () => {
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -7,7 +7,15 @@ const SimpleInput = () => {
   const [enteredNameTouched, setEnteredNameTouched] = useState<boolean>(false);
 
   const nameInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    setEnteredName(event.target.value);
+    const value = event.target.value;
+    setEnteredName(value);
+    if (value.trim() !== '') setEnteredNameIsValid(true);
+  };
+
+  const nameInputBlurHandler = (event: FocusEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setEnteredNameTouched(true);
+    if (value.trim() === '') setEnteredNameIsValid(false);
   };
 
   const formSubmissionHandler = (event: FormEvent) => {
@@ -43,6 +51,7 @@ const SimpleInput = () => {
           value={enteredName}
           ref={nameInputRef}
           onChange={nameInputChangeHandler}
+          onBlur={nameInputBlurHandler}
         />
         {nameInputIsInvalid && <p className="error-text">Name must not be empty.</p>}
       </div>
